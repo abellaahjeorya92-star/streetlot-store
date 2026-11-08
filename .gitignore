@@ -3,6 +3,4 @@ store.db
 store.db-shm
 store.db-wal
 public/css/output.css
-public/uploads/*
-!public/uploads/.gitkeep
 .env
