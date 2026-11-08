@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-ink-950 text-neutral-100 antialiased;
+  }
+  a {
+    @apply transition-colors;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-bold uppercase tracking-wide transition disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .btn-primary {
+    @apply bg-volt text-ink-950 hover:bg-volt-dark;
+  }
+  .btn-outline {
+    @apply border border-ink-600 text-neutral-100 hover:border-volt hover:text-volt;
+  }
+  .btn-danger {
+    @apply border border-red-500/50 text-red-400 hover:bg-red-500/10;
+  }
+  .btn-sm {
+    @apply px-3 py-2 text-xs;
+  }
+  .input {
+    @apply w-full rounded-md border border-ink-600 bg-ink-900 px-3 py-2.5 text-sm text-neutral-100 placeholder-neutral-500 focus:border-volt focus:outline-none focus:ring-1 focus:ring-volt;
+  }
+  .label {
+    @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-neutral-400;
+  }
+  .card {
+    @apply rounded-xl border border-ink-700 bg-ink-900;
+  }
+  .badge {
+    @apply inline-block rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide;
+  }
+  .th {
+    @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-400;
+  }
+  .td {
+    @apply px-4 py-3 text-sm;
+  }
+}

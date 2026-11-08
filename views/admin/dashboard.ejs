@@ -1,0 +1,69 @@
+<%- include('../partials/header') %>
+<%- include('../partials/admin-nav') %>
+
+<h1 class="font-display text-4xl uppercase tracking-wide">Dashboard</h1>
+
+<div class="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+  <div class="card p-5"><p class="label">Revenue</p><p class="text-3xl font-black text-volt"><%= money(stats.revenue) %></p></div>
+  <div class="card p-5"><p class="label">Orders</p><p class="text-3xl font-black"><%= stats.orders %></p></div>
+  <div class="card p-5"><p class="label">Products</p><p class="text-3xl font-black"><%= stats.products %></p></div>
+  <div class="card p-5"><p class="label">Customers</p><p class="text-3xl font-black"><%= stats.customers %></p></div>
+</div>
+
+<div class="mt-4 grid gap-4 sm:grid-cols-3">
+  <a href="/admin/orders?status=pending" class="card flex items-center justify-between p-5 hover:border-amber-400/60">
+    <span class="font-semibold">Pending</span><span class="text-2xl font-black text-amber-400"><%= byStatus.pending %></span>
+  </a>
+  <a href="/admin/orders?status=shipped" class="card flex items-center justify-between p-5 hover:border-sky-400/60">
+    <span class="font-semibold">Shipped</span><span class="text-2xl font-black text-sky-400"><%= byStatus.shipped %></span>
+  </a>
+  <a href="/admin/orders?status=delivered" class="card flex items-center justify-between p-5 hover:border-green-400/60">
+    <span class="font-semibold">Delivered</span><span class="text-2xl font-black text-green-400"><%= byStatus.delivered %></span>
+  </a>
+</div>
+
+<div class="mt-8 grid gap-6 lg:grid-cols-2">
+  <section class="card overflow-hidden">
+    <div class="flex items-center justify-between border-b border-ink-700 px-5 py-4">
+      <h2 class="font-bold uppercase tracking-wide">Recent orders</h2>
+      <a href="/admin/orders" class="text-sm font-semibold text-volt hover:underline">All orders</a>
+    </div>
+    <% if (recent.length === 0) { %>
+      <p class="px-5 py-8 text-center text-sm text-neutral-400">No orders yet.</p>
+    <% } else { %>
+      <table class="w-full">
+        <tbody class="divide-y divide-ink-700">
+          <% recent.forEach(function (o) { %>
+            <tr>
+              <td class="td font-bold"><a href="/admin/orders/<%= o.id %>" class="hover:text-volt">#<%= o.id %></a></td>
+              <td class="td text-neutral-300"><%= o.customer %></td>
+              <td class="td"><%= money(o.total_cents) %></td>
+              <td class="td"><%- include('../partials/status-badge', { status: o.status }) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </section>
+
+  <section class="card overflow-hidden">
+    <div class="border-b border-ink-700 px-5 py-4"><h2 class="font-bold uppercase tracking-wide">Low stock (3 or fewer)</h2></div>
+    <% if (lowStock.length === 0) { %>
+      <p class="px-5 py-8 text-center text-sm text-neutral-400">Everything is well stocked.</p>
+    <% } else { %>
+      <table class="w-full">
+        <tbody class="divide-y divide-ink-700">
+          <% lowStock.forEach(function (v) { %>
+            <tr>
+              <td class="td"><a href="/admin/products/<%= v.product_id %>/edit" class="font-semibold hover:text-volt"><%= v.name %></a></td>
+              <td class="td text-neutral-300"><%= v.size %> / <%= v.color %></td>
+              <td class="td text-right"><span class="badge <%= v.stock === 0 ? 'bg-red-500/15 text-red-400' : 'bg-amber-500/15 text-amber-400' %>"><%= v.stock === 0 ? 'Sold out' : v.stock + ' left' %></span></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </section>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,25 @@
+<%# Expects: p (product row from listSelect) %>
+<a href="/product/<%= p.id %>" class="group card overflow-hidden transition hover:border-volt/60">
+  <div class="relative aspect-square overflow-hidden">
+    <div class="h-full w-full transition duration-300 group-hover:scale-105">
+      <%- include('product-image', { p: p }) %>
+    </div>
+    <% if (p.total_stock <= 0) { %>
+      <span class="badge absolute left-3 top-3 bg-red-500 text-white">Sold out</span>
+    <% } else if (p.total_stock <= 6) { %>
+      <span class="badge absolute left-3 top-3 bg-volt text-ink-950">Low stock</span>
+    <% } %>
+  </div>
+  <div class="p-4">
+    <p class="text-xs uppercase tracking-wider text-neutral-500"><%= p.category_name %></p>
+    <h3 class="mt-1 font-bold leading-tight group-hover:text-volt"><%= p.name %></h3>
+    <div class="mt-2 flex items-center justify-between">
+      <span class="font-semibold"><%= money(p.price_cents) %></span>
+      <span class="flex gap-1">
+        <% (p.colors ? p.colors.split(',').slice(0, 5) : []).forEach(function (c) { %>
+          <span class="h-3.5 w-3.5 rounded-full border border-white/20" style="background: <%= colorHex(c) %>" title="<%= c %>"></span>
+        <% }) %>
+      </span>
+    </div>
+  </div>
+</a>

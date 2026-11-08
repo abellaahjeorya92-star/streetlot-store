@@ -1,0 +1,43 @@
+<%- include('partials/header') %>
+
+<h1 class="font-display text-4xl uppercase tracking-wide">Checkout</h1>
+
+<div class="mt-6 grid gap-8 lg:grid-cols-3">
+  <form action="/cart/checkout" method="post" class="card space-y-5 p-6 lg:col-span-2">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <h2 class="text-lg font-bold uppercase tracking-wide">Delivery details</h2>
+
+    <% if (error) { %>
+      <div class="rounded-md border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300"><%= error %></div>
+    <% } %>
+
+    <div>
+      <label class="label" for="name">Full name</label>
+      <input class="input" id="name" name="name" value="<%= form.name %>" required>
+    </div>
+    <div>
+      <label class="label" for="address">Delivery address</label>
+      <textarea class="input" id="address" name="address" rows="4" required placeholder="Street, city, postal code, country"><%= form.address %></textarea>
+    </div>
+    <p class="text-sm text-neutral-400">This is a demo store. No real payment is taken: orders are placed as pay-on-delivery.</p>
+    <button type="submit" class="btn btn-primary w-full sm:w-auto">Place order (<%= money(cart.total) %>)</button>
+  </form>
+
+  <aside class="card h-fit p-6">
+    <h2 class="text-lg font-bold uppercase tracking-wide">Your items</h2>
+    <ul class="mt-4 space-y-3 text-sm">
+      <% cart.items.forEach(function (it) { %>
+        <li class="flex justify-between gap-3">
+          <span><%= it.qty %> &times; <%= it.name %> <span class="text-neutral-400">(<%= it.size %> / <%= it.color %>)</span></span>
+          <span class="shrink-0 font-semibold"><%= money(it.line_total) %></span>
+        </li>
+      <% }) %>
+    </ul>
+    <div class="mt-4 flex justify-between border-t border-ink-700 pt-3 text-lg font-bold">
+      <span>Total</span><span class="text-volt"><%= money(cart.total) %></span>
+    </div>
+    <a href="/cart" class="mt-3 block text-sm text-neutral-400 hover:text-white">Edit cart</a>
+  </aside>
+</div>
+
+<%- include('partials/footer') %>

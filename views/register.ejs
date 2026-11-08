@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+
+<div class="mx-auto max-w-md">
+  <h1 class="font-display text-4xl uppercase tracking-wide">Create account</h1>
+
+  <form action="/register" method="post" class="card mt-6 space-y-5 p-6">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <% if (error) { %>
+      <div class="rounded-md border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300"><%= error %></div>
+    <% } %>
+    <div>
+      <label class="label" for="name">Name</label>
+      <input class="input" id="name" name="name" value="<%= form.name || '' %>" required autofocus>
+    </div>
+    <div>
+      <label class="label" for="email">Email</label>
+      <input class="input" id="email" type="email" name="email" value="<%= form.email || '' %>" required>
+    </div>
+    <div>
+      <label class="label" for="password">Password (8+ characters)</label>
+      <input class="input" id="password" type="password" name="password" minlength="8" required>
+    </div>
+    <div>
+      <label class="label" for="confirm">Confirm password</label>
+      <input class="input" id="confirm" type="password" name="confirm" minlength="8" required>
+    </div>
+    <button type="submit" class="btn btn-primary w-full">Create account</button>
+    <p class="text-center text-sm text-neutral-400">Already have an account? <a href="/login" class="font-semibold text-volt hover:underline">Log in</a></p>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

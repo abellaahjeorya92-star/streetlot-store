@@ -1,0 +1,74 @@
+<%- include('partials/header') %>
+
+<div class="flex flex-col gap-8 lg:flex-row">
+  <aside class="lg:w-64 lg:shrink-0">
+    <form action="/shop" method="get" class="card space-y-4 p-5">
+      <div>
+        <label class="label" for="q">Search</label>
+        <input class="input" id="q" type="search" name="q" value="<%= filters.q %>" placeholder="Name or brand">
+      </div>
+      <div>
+        <label class="label" for="category">Category</label>
+        <select class="input" id="category" name="category">
+          <option value="">All categories</option>
+          <% categories.forEach(function (c) { %>
+            <option value="<%= c.slug %>" <%= filters.category === c.slug ? 'selected' : '' %>><%= c.name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div>
+        <label class="label" for="size">Size (in stock)</label>
+        <select class="input" id="size" name="size">
+          <option value="">Any size</option>
+          <% sizes.forEach(function (s) { %>
+            <option value="<%= s %>" <%= filters.size === s ? 'selected' : '' %>><%= s %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div>
+        <label class="label" for="color">Color (in stock)</label>
+        <select class="input" id="color" name="color">
+          <option value="">Any color</option>
+          <% colors.forEach(function (c) { %>
+            <option value="<%= c %>" <%= filters.color === c ? 'selected' : '' %>><%= c %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div>
+        <label class="label" for="sort">Sort by</label>
+        <select class="input" id="sort" name="sort">
+          <option value="newest" <%= filters.sort === 'newest' ? 'selected' : '' %>>Newest</option>
+          <option value="price_asc" <%= filters.sort === 'price_asc' ? 'selected' : '' %>>Price: low to high</option>
+          <option value="price_desc" <%= filters.sort === 'price_desc' ? 'selected' : '' %>>Price: high to low</option>
+          <option value="name" <%= filters.sort === 'name' ? 'selected' : '' %>>Name A-Z</option>
+        </select>
+      </div>
+      <div class="flex gap-2">
+        <button type="submit" class="btn btn-primary btn-sm flex-1">Apply</button>
+        <a href="/shop" class="btn btn-outline btn-sm">Reset</a>
+      </div>
+    </form>
+  </aside>
+
+  <section class="flex-1">
+    <div class="flex items-end justify-between">
+      <h1 class="font-display text-4xl uppercase tracking-wide">Shop</h1>
+      <p class="text-sm text-neutral-400"><%= products.length %> item<%= products.length === 1 ? '' : 's' %></p>
+    </div>
+
+    <% if (products.length === 0) { %>
+      <div class="card mt-6 px-6 py-16 text-center">
+        <p class="text-lg font-semibold">Nothing matches those filters.</p>
+        <a href="/shop" class="btn btn-outline mt-4">Clear filters</a>
+      </div>
+    <% } else { %>
+      <div class="mt-6 grid grid-cols-2 gap-4 xl:grid-cols-3">
+        <% products.forEach(function (p) { %>
+          <%- include('partials/product-card', { p: p }) %>
+        <% }) %>
+      </div>
+    <% } %>
+  </section>
+</div>
+
+<%- include('partials/footer') %>

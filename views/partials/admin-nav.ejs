@@ -1,0 +1,10 @@
+<% const tabs = [
+  ['/admin', 'Dashboard'], ['/admin/products', 'Products'], ['/admin/categories', 'Categories'], ['/admin/orders', 'Orders'],
+]; %>
+<div class="mb-8 flex flex-wrap items-center gap-2 border-b border-ink-700 pb-4">
+  <span class="mr-2 rounded bg-volt px-2 py-1 text-xs font-black uppercase tracking-wider text-ink-950">Admin</span>
+  <% tabs.forEach(function (t) {
+       const active = t[0] === '/admin' ? currentPath === '/admin' || currentPath === '/admin/' : currentPath.startsWith(t[0]); %>
+    <a href="<%= t[0] %>" class="rounded-md px-4 py-2 text-sm font-semibold <%= active ? 'bg-ink-700 text-volt' : 'text-neutral-300 hover:bg-ink-800' %>"><%= t[1] %></a>
+  <% }) %>
+</div>

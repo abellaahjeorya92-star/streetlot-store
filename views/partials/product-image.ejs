@@ -1,0 +1,10 @@
+<%# Expects: p (product row). Optional: cls (extra classes) %>
+<% const hue = (p.id * 47) % 360; %>
+<% if (p.image_url) { %>
+  <img src="<%= p.image_url %>" alt="<%= p.name %>" class="h-full w-full object-cover <%= typeof cls !== 'undefined' ? cls : '' %>" loading="lazy">
+<% } else { %>
+  <div class="flex h-full w-full items-center justify-center <%= typeof cls !== 'undefined' ? cls : '' %>"
+       style="background: linear-gradient(135deg, hsl(<%= hue %> 55% 28%), hsl(<%= (hue + 50) % 360 %> 60% 9%));">
+    <span class="font-display text-5xl tracking-wider text-white/25"><%= p.name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase() %></span>
+  </div>
+<% } %>

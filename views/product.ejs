@@ -1,0 +1,153 @@
+<%- include('partials/header') %>
+
+<nav class="mb-6 text-sm text-neutral-400">
+  <a href="/shop" class="hover:text-white">Shop</a> /
+  <a href="/shop?category=<%= product.category_slug %>" class="hover:text-white"><%= product.category_name %></a> /
+  <span class="text-neutral-200"><%= product.name %></span>
+</nav>
+
+<div class="grid gap-10 md:grid-cols-2">
+  <div class="card aspect-square overflow-hidden">
+    <%- include('partials/product-image', { p: product }) %>
+  </div>
+
+  <div>
+    <p class="text-sm uppercase tracking-widest text-neutral-500"><%= product.brand %></p>
+    <h1 class="mt-1 font-display text-4xl uppercase tracking-wide sm:text-5xl"><%= product.name %></h1>
+    <p class="mt-3 text-2xl font-bold text-volt"><%= money(product.price_cents) %></p>
+    <p class="mt-5 leading-relaxed text-neutral-300"><%= product.description %></p>
+
+    <form action="/cart/add" method="post" class="mt-8 space-y-6" id="addForm">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="hidden" name="variantId" id="variantId" value="">
+
+      <div>
+        <div class="flex items-center justify-between">
+          <span class="label mb-0">Color: <span id="colorName" class="text-neutral-100 normal-case">choose one</span></span>
+        </div>
+        <div class="mt-2 flex flex-wrap gap-3">
+          <% colors.forEach(function (c) { %>
+            <button type="button" data-color="<%= c %>" title="<%= c %>" aria-label="<%= c %>"
+              class="color-btn h-10 w-10 rounded-full border-2 border-ink-600 transition disabled:cursor-not-allowed disabled:opacity-25 disabled:line-through"
+              style="background: <%= colorHex(c) %>"></button>
+          <% }) %>
+        </div>
+      </div>
+
+      <div>
+        <span class="label">Size</span>
+        <div class="flex flex-wrap gap-2">
+          <% sizes.forEach(function (s) { %>
+            <button type="button" data-size="<%= s %>"
+              class="size-btn min-w-12 rounded-md border border-ink-600 px-4 py-2.5 text-sm font-bold transition hover:border-volt disabled:cursor-not-allowed disabled:opacity-30 disabled:line-through disabled:hover:border-ink-600"><%= s %></button>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="flex items-end gap-4">
+        <div class="w-24">
+          <label class="label" for="qty">Qty</label>
+          <input class="input" id="qty" type="number" name="qty" value="1" min="1" max="10">
+        </div>
+        <button type="submit" id="addBtn" class="btn btn-primary flex-1" disabled>Select size and color</button>
+      </div>
+      <p id="stockMsg" class="min-h-5 text-sm text-neutral-400"></p>
+    </form>
+  </div>
+</div>
+
+<% if (related.length) { %>
+  <section class="mt-16">
+    <h2 class="font-display text-3xl uppercase tracking-wide">You may also like</h2>
+    <div class="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <% related.forEach(function (p) { %>
+        <%- include('partials/product-card', { p: p }) %>
+      <% }) %>
+    </div>
+  </section>
+<% } %>
+
+<script>
+  (function () {
+    var variants = <%- JSON.stringify(variants).replace(/</g, '\\u003c') %>;
+    var state = { size: null, color: null };
+
+    var sizeBtns = document.querySelectorAll('[data-size]');
+    var colorBtns = document.querySelectorAll('[data-color]');
+    var hidden = document.getElementById('variantId');
+    var addBtn = document.getElementById('addBtn');
+    var stockMsg = document.getElementById('stockMsg');
+    var colorName = document.getElementById('colorName');
+    var qty = document.getElementById('qty');
+
+    function find(size, color) {
+      for (var i = 0; i < variants.length; i++) {
+        if (variants[i].size === size && variants[i].color === color) return variants[i];
+      }
+      return null;
+    }
+
+    function inStock(size, color) {
+      return variants.some(function (v) {
+        return v.stock > 0 && (!size || v.size === size) && (!color || v.color === color);
+      });
+    }
+
+    function render() {
+      sizeBtns.forEach(function (b) {
+        var s = b.getAttribute('data-size');
+        b.disabled = !inStock(s, state.color);
+        var on = state.size === s;
+        b.classList.toggle('bg-volt', on);
+        b.classList.toggle('text-ink-950', on);
+        b.classList.toggle('border-volt', on);
+      });
+      colorBtns.forEach(function (b) {
+        var c = b.getAttribute('data-color');
+        b.disabled = !inStock(state.size, c);
+        b.classList.toggle('ring-2', state.color === c);
+        b.classList.toggle('ring-volt', state.color === c);
+        b.classList.toggle('ring-offset-2', state.color === c);
+        b.classList.toggle('ring-offset-ink-950', state.color === c);
+      });
+      colorName.textContent = state.color || 'choose one';
+
+      var v = state.size && state.color ? find(state.size, state.color) : null;
+      if (v && v.stock > 0) {
+        hidden.value = v.id;
+        qty.max = Math.min(10, v.stock);
+        if (parseInt(qty.value, 10) > v.stock) qty.value = v.stock;
+        addBtn.disabled = false;
+        addBtn.textContent = 'Add to cart';
+        stockMsg.textContent = v.stock <= 3 ? 'Only ' + v.stock + ' left in this size and color.' : 'In stock.';
+      } else {
+        hidden.value = '';
+        addBtn.disabled = true;
+        addBtn.textContent = state.size && state.color ? 'Sold out' : 'Select size and color';
+        stockMsg.textContent = state.size && state.color ? 'That combination is sold out.' : '';
+      }
+    }
+
+    sizeBtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var s = b.getAttribute('data-size');
+        state.size = state.size === s ? null : s;
+        render();
+      });
+    });
+    colorBtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var c = b.getAttribute('data-color');
+        state.color = state.color === c ? null : c;
+        render();
+      });
+    });
+
+    // Preselect when there is only one choice (e.g. a cap with a single size).
+    if (sizeBtns.length === 1 && !sizeBtns[0].disabled) state.size = sizeBtns[0].getAttribute('data-size');
+    if (colorBtns.length === 1 && !colorBtns[0].disabled) state.color = colorBtns[0].getAttribute('data-color');
+    render();
+  })();
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,44 @@
+<%- include('../partials/header') %>
+<%- include('../partials/admin-nav') %>
+
+<h1 class="font-display text-4xl uppercase tracking-wide">Categories</h1>
+
+<form action="/admin/categories" method="post" class="card mt-6 flex flex-col gap-3 p-5 sm:flex-row sm:items-end">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="flex-1">
+    <label class="label" for="new-name">New category</label>
+    <input class="input" id="new-name" name="name" placeholder="e.g. Jackets" required>
+  </div>
+  <button type="submit" class="btn btn-primary">Add category</button>
+</form>
+
+<div class="card mt-6 overflow-x-auto">
+  <table class="w-full">
+    <thead class="border-b border-ink-700">
+      <tr><th class="th">Name</th><th class="th">Slug</th><th class="th">Products</th><th class="th"></th></tr>
+    </thead>
+    <tbody class="divide-y divide-ink-700">
+      <% categories.forEach(function (c) { %>
+        <tr>
+          <td class="td">
+            <form action="/admin/categories/<%= c.id %>" method="post" class="flex items-center gap-2">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <input class="input max-w-56 py-1.5" name="name" value="<%= c.name %>" required>
+              <button type="submit" class="btn btn-outline btn-sm">Rename</button>
+            </form>
+          </td>
+          <td class="td font-mono text-neutral-400"><%= c.slug %></td>
+          <td class="td"><%= c.product_count %></td>
+          <td class="td text-right">
+            <form action="/admin/categories/<%= c.id %>/delete" method="post" onsubmit="return confirm('Delete this category?');" class="inline">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

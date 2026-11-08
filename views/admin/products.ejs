@@ -1,0 +1,43 @@
+<%- include('../partials/header') %>
+<%- include('../partials/admin-nav') %>
+
+<div class="flex items-center justify-between">
+  <h1 class="font-display text-4xl uppercase tracking-wide">Products</h1>
+  <a href="/admin/products/new" class="btn btn-primary">New product</a>
+</div>
+
+<div class="card mt-6 overflow-x-auto">
+  <table class="w-full">
+    <thead class="border-b border-ink-700">
+      <tr><th class="th">Product</th><th class="th">Category</th><th class="th">Price</th><th class="th">Variants</th><th class="th">Stock</th><th class="th">Status</th><th class="th"></th></tr>
+    </thead>
+    <tbody class="divide-y divide-ink-700">
+      <% products.forEach(function (p) { %>
+        <tr>
+          <td class="td">
+            <div class="flex items-center gap-3">
+              <div class="h-12 w-12 shrink-0 overflow-hidden rounded-md"><%- include('../partials/product-image', { p: p }) %></div>
+              <span class="font-semibold"><%= p.name %></span>
+            </div>
+          </td>
+          <td class="td text-neutral-300"><%= p.category_name %></td>
+          <td class="td"><%= money(p.price_cents) %></td>
+          <td class="td"><%= p.variant_count %></td>
+          <td class="td"><%= p.total_stock %></td>
+          <td class="td"><span class="badge <%= p.is_active ? 'bg-green-500/15 text-green-400' : 'bg-neutral-500/20 text-neutral-400' %>"><%= p.is_active ? 'Active' : 'Hidden' %></span></td>
+          <td class="td">
+            <div class="flex justify-end gap-2">
+              <a href="/admin/products/<%= p.id %>/edit" class="btn btn-outline btn-sm">Edit</a>
+              <form action="/admin/products/<%= p.id %>/delete" method="post" onsubmit="return confirm('Delete this product and all its variants?');">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

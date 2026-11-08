@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+
+<h1 class="font-display text-4xl uppercase tracking-wide">My orders</h1>
+
+<% if (orders.length === 0) { %>
+  <div class="card mt-6 px-6 py-16 text-center">
+    <p class="text-lg font-semibold">You haven't placed any orders yet.</p>
+    <a href="/shop" class="btn btn-primary mt-4">Shop now</a>
+  </div>
+<% } else { %>
+  <div class="card mt-6 overflow-x-auto">
+    <table class="w-full">
+      <thead class="border-b border-ink-700">
+        <tr><th class="th">Order</th><th class="th">Placed</th><th class="th">Items</th><th class="th">Total</th><th class="th">Status</th><th class="th"></th></tr>
+      </thead>
+      <tbody class="divide-y divide-ink-700">
+        <% orders.forEach(function (o) { %>
+          <tr>
+            <td class="td font-bold">#<%= o.id %></td>
+            <td class="td text-neutral-300"><%= formatDate(o.created_at) %></td>
+            <td class="td"><%= o.item_count %></td>
+            <td class="td font-semibold"><%= money(o.total_cents) %></td>
+            <td class="td"><%- include('partials/status-badge', { status: o.status }) %></td>
+            <td class="td text-right"><a href="/orders/<%= o.id %>" class="font-semibold text-volt hover:underline">Track</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

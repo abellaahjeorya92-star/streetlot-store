@@ -1,0 +1,18 @@
+<%# Expects: order (with status, created_at, shipped_at, delivered_at) %>
+<% const steps = [
+  { key: 'pending',   label: 'Order placed', date: order.created_at },
+  { key: 'shipped',   label: 'Shipped',      date: order.shipped_at },
+  { key: 'delivered', label: 'Delivered',    date: order.delivered_at },
+];
+const currentIndex = steps.findIndex(function (s) { return s.key === order.status; }); %>
+<ol class="grid grid-cols-3 gap-2">
+  <% steps.forEach(function (s, i) { %>
+    <li class="text-center">
+      <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-black
+        <%= i <= currentIndex ? 'border-volt bg-volt text-ink-950' : 'border-ink-600 text-neutral-500' %>"><%- i <= currentIndex ? '&#10003;' : (i + 1) %></div>
+      <div class="mt-2 h-1 rounded-full <%= i <= currentIndex ? 'bg-volt' : 'bg-ink-700' %>"></div>
+      <p class="mt-2 text-sm font-bold <%= i <= currentIndex ? 'text-white' : 'text-neutral-500' %>"><%= s.label %></p>
+      <p class="text-xs text-neutral-400"><%= s.date ? formatDate(s.date) : 'Waiting' %></p>
+    </li>
+  <% }) %>
+</ol>

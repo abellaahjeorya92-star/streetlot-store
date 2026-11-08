@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= typeof title !== 'undefined' && title ? title + ' | ' : '' %>STREETLOT</title>
+  <link rel="stylesheet" href="/css/output.css">
+</head>
+<body class="min-h-screen flex flex-col">
+  <header class="sticky top-0 z-30 border-b border-ink-700 bg-ink-950/90 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6">
+      <a href="/" class="font-display text-2xl tracking-wider text-volt">STREETLOT</a>
+
+      <nav class="ml-4 hidden items-center gap-6 text-sm font-semibold uppercase tracking-wide md:flex">
+        <a href="/shop" class="<%= currentPath === '/shop' ? 'text-volt' : 'text-neutral-300 hover:text-white' %>">Shop</a>
+        <a href="/shop?category=sneakers" class="text-neutral-300 hover:text-white">Sneakers</a>
+        <a href="/shop?category=hoodies" class="text-neutral-300 hover:text-white">Hoodies</a>
+        <a href="/shop?category=tees" class="text-neutral-300 hover:text-white">Tees</a>
+      </nav>
+
+      <form action="/shop" method="get" class="ml-auto hidden flex-1 max-w-xs sm:block">
+        <input type="search" name="q" placeholder="Search drops..." class="input py-2">
+      </form>
+
+      <div class="ml-auto flex items-center gap-3 text-sm sm:ml-0">
+        <% if (user) { %>
+          <% if (user.role === 'admin') { %>
+            <a href="/admin" class="rounded-md border border-volt/60 px-3 py-1.5 font-semibold text-volt hover:bg-volt/10">Admin</a>
+          <% } %>
+          <a href="/orders" class="hidden text-neutral-300 hover:text-white sm:inline">My orders</a>
+          <form action="/logout" method="post" class="inline">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" class="text-neutral-400 hover:text-white">Log out</button>
+          </form>
+        <% } else { %>
+          <a href="/login" class="text-neutral-300 hover:text-white">Log in</a>
+          <a href="/register" class="hidden rounded-md border border-ink-600 px-3 py-1.5 font-semibold hover:border-volt hover:text-volt sm:inline">Sign up</a>
+        <% } %>
+        <a href="/cart" class="relative rounded-md bg-ink-800 px-3 py-1.5 font-semibold hover:bg-ink-700">
+          Cart
+          <% if (cartCount > 0) { %>
+            <span class="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-volt px-1 text-xs font-black text-ink-950"><%= cartCount %></span>
+          <% } %>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <% if (flash) { %>
+    <div class="mx-auto mt-4 w-full max-w-7xl px-4 sm:px-6">
+      <div class="rounded-md border px-4 py-3 text-sm font-medium
+        <%= flash.type === 'success' ? 'border-green-500/40 bg-green-500/10 text-green-300' : flash.type === 'error' ? 'border-red-500/40 bg-red-500/10 text-red-300' : 'border-ink-600 bg-ink-800 text-neutral-200' %>">
+        <%= flash.msg %>
+      </div>
+    </div>
+  <% } %>
+
+  <main class="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6">
+    

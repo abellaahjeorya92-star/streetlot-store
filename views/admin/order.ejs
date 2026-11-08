@@ -1,0 +1,70 @@
+<%- include('../partials/header') %>
+<%- include('../partials/admin-nav') %>
+
+<a href="/admin/orders" class="text-sm text-neutral-400 hover:text-white">&larr; All orders</a>
+<div class="mt-2 flex flex-wrap items-center gap-3">
+  <h1 class="font-display text-4xl uppercase tracking-wide">Order #<%= order.id %></h1>
+  <%- include('../partials/status-badge', { status: order.status }) %>
+</div>
+
+<div class="card mt-6 p-6">
+  <%- include('../partials/order-tracker', { order: order }) %>
+</div>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-3">
+  <div class="card overflow-x-auto lg:col-span-2">
+    <table class="w-full">
+      <thead class="border-b border-ink-700">
+        <tr><th class="th">Item</th><th class="th">Size / Color</th><th class="th">Qty</th><th class="th text-right">Price</th></tr>
+      </thead>
+      <tbody class="divide-y divide-ink-700">
+        <% items.forEach(function (it) { %>
+          <tr>
+            <td class="td font-semibold"><%= it.product_name %></td>
+            <td class="td text-neutral-300"><%= it.size %> / <%= it.color %></td>
+            <td class="td"><%= it.quantity %></td>
+            <td class="td text-right"><%= money(it.unit_price_cents * it.quantity) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+      <tfoot class="border-t border-ink-700">
+        <tr><td colspan="3" class="td text-right font-bold">Total</td><td class="td text-right text-lg font-bold text-volt"><%= money(order.total_cents) %></td></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="space-y-6">
+    <aside class="card p-6 text-sm">
+      <h2 class="text-lg font-bold uppercase tracking-wide">Customer</h2>
+      <p class="mt-3 font-semibold"><%= order.customer %></p>
+      <p class="text-neutral-400"><%= order.email %></p>
+      <h3 class="mt-4 text-xs font-semibold uppercase tracking-wider text-neutral-400">Ship to</h3>
+      <p class="mt-1 font-semibold"><%= order.shipping_name %></p>
+      <p class="whitespace-pre-line text-neutral-300"><%= order.shipping_address %></p>
+      <% if (order.tracking_number) { %>
+        <p class="mt-4 text-neutral-300">Tracking: <span class="font-mono font-bold text-white"><%= order.tracking_number %></span></p>
+      <% } %>
+    </aside>
+
+    <aside class="card p-6">
+      <h2 class="text-lg font-bold uppercase tracking-wide">Update status</h2>
+      <% if (nextStatus) { %>
+        <form action="/admin/orders/<%= order.id %>/status" method="post" class="mt-4 space-y-4">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="status" value="<%= nextStatus %>">
+          <% if (nextStatus === 'shipped') { %>
+            <div>
+              <label class="label" for="tracking">Tracking number (optional)</label>
+              <input class="input" id="tracking" name="tracking_number" maxlength="60" placeholder="e.g. SL123456789">
+            </div>
+          <% } %>
+          <button type="submit" class="btn btn-primary w-full">Mark as <%= nextStatus %></button>
+        </form>
+      <% } else { %>
+        <p class="mt-3 text-sm text-neutral-400">This order has been delivered. Nothing more to do.</p>
+      <% } %>
+    </aside>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

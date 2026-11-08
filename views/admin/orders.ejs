@@ -1,0 +1,39 @@
+<%- include('../partials/header') %>
+<%- include('../partials/admin-nav') %>
+
+<div class="flex flex-wrap items-center justify-between gap-3">
+  <h1 class="font-display text-4xl uppercase tracking-wide">Orders</h1>
+  <div class="flex gap-2 text-sm font-semibold">
+    <a href="/admin/orders" class="rounded-md px-3 py-1.5 <%= !status ? 'bg-ink-700 text-volt' : 'text-neutral-300 hover:bg-ink-800' %>">All</a>
+    <a href="/admin/orders?status=pending" class="rounded-md px-3 py-1.5 <%= status === 'pending' ? 'bg-ink-700 text-volt' : 'text-neutral-300 hover:bg-ink-800' %>">Pending</a>
+    <a href="/admin/orders?status=shipped" class="rounded-md px-3 py-1.5 <%= status === 'shipped' ? 'bg-ink-700 text-volt' : 'text-neutral-300 hover:bg-ink-800' %>">Shipped</a>
+    <a href="/admin/orders?status=delivered" class="rounded-md px-3 py-1.5 <%= status === 'delivered' ? 'bg-ink-700 text-volt' : 'text-neutral-300 hover:bg-ink-800' %>">Delivered</a>
+  </div>
+</div>
+
+<% if (orders.length === 0) { %>
+  <div class="card mt-6 px-6 py-14 text-center text-neutral-400">No orders found.</div>
+<% } else { %>
+  <div class="card mt-6 overflow-x-auto">
+    <table class="w-full">
+      <thead class="border-b border-ink-700">
+        <tr><th class="th">Order</th><th class="th">Customer</th><th class="th">Placed</th><th class="th">Items</th><th class="th">Total</th><th class="th">Status</th><th class="th"></th></tr>
+      </thead>
+      <tbody class="divide-y divide-ink-700">
+        <% orders.forEach(function (o) { %>
+          <tr>
+            <td class="td font-bold">#<%= o.id %></td>
+            <td class="td"><%= o.customer %><br><span class="text-xs text-neutral-500"><%= o.email %></span></td>
+            <td class="td text-neutral-300"><%= formatDate(o.created_at) %></td>
+            <td class="td"><%= o.item_count %></td>
+            <td class="td font-semibold"><%= money(o.total_cents) %></td>
+            <td class="td"><%- include('../partials/status-badge', { status: o.status }) %></td>
+            <td class="td text-right"><a href="/admin/orders/<%= o.id %>" class="btn btn-outline btn-sm">Manage</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<%- include('../partials/footer') %>
