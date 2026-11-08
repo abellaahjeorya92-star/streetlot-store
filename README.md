@@ -94,3 +94,9 @@ Order items keep a snapshot of the product name, size, color and price, so past 
 - Order cancellation that restores stock
 - Pagination on the shop and admin tables
 - Persistent session store (the default in-memory store is for development only)
+
+## Product images
+
+The sample product photos are in `public/uploads/`. After running the app,
+log in as admin, open Admin > Products > Edit, and upload a picture for each
+product. Uploaded images appear on the home page, shop, and product pages.
